@@ -6,9 +6,10 @@ import {icons} from '../constants';
 interface FormFieldProps {
     title: string;
     value: string;
-  placeholder: string;
+  placeholder?: string;
   handleChangeText: (text: string) => void;
     otherStyles?: string;
+    keyboardType?:string;
   }
   
   const FormField: React.FC<FormFieldProps> = ({
