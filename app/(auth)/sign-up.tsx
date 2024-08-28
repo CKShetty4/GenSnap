@@ -17,7 +17,7 @@ const SignUp = () => {
   })
 
   const [isSubmitting, setisSubmitting] = useState(false)
-const {setUser,setIsLoggedIn} = useGlobalContext()
+const {setUser,setisLoggedIn} = useGlobalContext()
   const submit = async () => {
     if (!form.username || !form.email || !form.password) {
       Alert.alert('Error','Please fill all fields')
@@ -28,7 +28,7 @@ const {setUser,setIsLoggedIn} = useGlobalContext()
       const result = await createUser(form.email, form.password, form.username)
       //set it to global state using context
       setUser(result)
-      setIsLoggedIn(true)
+      setisLoggedIn(true)
 
       router.replace('/home')
     } catch (error) {
