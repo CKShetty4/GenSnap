@@ -6,56 +6,36 @@ import SearchInput from '@/components/SearchInput'
 import Trending from '@/components/Trending'
 import EmptyState from '@/components/EmptyState'
 import { getAllPosts } from '@/lib/appwrite'
+import useAppwrite from '@/lib/useAppwrite'
+import VideoCard from '@/components/VideoCard'
 
 
 
 const Home = () => {
 
-
-const [data, setData] = useState([])
-const [isLoading, setisLoading] = useState(true)
-
-useEffect(() => {
-  const fetchData = async () => {
-    setisLoading(true);
-    try{
-      const response = await getAllPosts();
-      setData(response);
-    }
-    catch(error){
-      console.log(error)
-      Alert.alert('Error', 'An error occured while fetching data')
-    }
-    finally{
-      setisLoading(false)
-    }
-  }
-  fetchData();
-}, []);
-
-console.log(data)
+const {data:posts,refetch}=useAppwrite(getAllPosts);
 
 const [refreshng, setrefreshng] = useState(false)
 
 const onRefresh= async()=>{
   setrefreshng(true)
-  //recall posts/videos to check if new videos are available
+  await refetch();
   setrefreshng(false)
 }
 
-
+console.log(posts)
   return (
     <SafeAreaView className='bg-primary h-full'>{/* We did not use Scroll View because it does not support both horizontal and vertical scrolling at same time*/}
       
       <FlatList
-        data={[{ id: 1 }, { id: 2 }, { id: 3 },]}//Later the video data will be used here
+        data={posts}
         // data={[]} To display empty state
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View>
-            <Text className='text-3xl text-white'>{item.id}
-            </Text>
-          </View>
+        keyExtractor={(item: { $id: string }) => item.$id}//(item) => item.$id
+        renderItem={({ item }: { item: { $id: string; title: string } }) => (
+          // renderItem={({ item }) => (
+          <VideoCard
+          video={item}
+          />
         )}
         ListHeaderComponent={() => (
           <View className='flex my-6 px-4 space-y-6  '>
