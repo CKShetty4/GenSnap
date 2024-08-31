@@ -31,10 +31,10 @@ console.log(posts)
         data={posts}
         // data={[]} To display empty state
         keyExtractor={(item: { $id: string }) => item.$id}//(item) => item.$id
-        renderItem={({ item }: { item: { $id: string; title: string } }) => (
+        renderItem={({ item }: { item: { $id: string; title: string; thumbnail: string; video: string; creator: { username: string; avatar: string; } } }) => (
           // renderItem={({ item }) => (
           <VideoCard
-          video={item}
+          Video={item}
           />
         )}
         ListHeaderComponent={() => (

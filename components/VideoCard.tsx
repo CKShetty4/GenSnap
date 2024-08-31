@@ -2,7 +2,19 @@ import { View, Text, Image, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { icons } from '@/constants'
 
-const VideoCard = ({ video: { title, thumbnail, video, creator: { username, avatar } } }) => {
+interface VideoCardProps {
+  Video: {
+    title: string;
+    thumbnail: string;
+    video: string;
+    creator: {
+      username: string;
+      avatar: string;
+    };
+  };
+}
+
+const VideoCard = ({ Video: { title, thumbnail, video, creator: { username, avatar } } }: VideoCardProps) => {
 
 const [play, setplay] = useState(false)
 
