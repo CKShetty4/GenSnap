@@ -24,7 +24,7 @@ const Home = () => {
     setrefreshng(false)
   }
 
-  console.log(posts)
+  //console.log(posts)
   return (
     <SafeAreaView className='bg-primary h-full'>{/* We did not use Scroll View because it does not support both horizontal and vertical scrolling at same time*/}
 

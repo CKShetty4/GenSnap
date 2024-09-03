@@ -1,7 +1,8 @@
 import { View, Text, Image, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { icons } from '@/constants'
-import { ResizeMode, Video, AVPlaybackStatus, AVPlaybackStatusError } from 'expo-av';
+import { ResizeMode, Video } from 'expo-av';
+import WebView from 'react-native-webview';
 
 interface VideoCardProps {
   Video: {
@@ -17,7 +18,8 @@ interface VideoCardProps {
 
 const VideoCard = ({ Video: { title, thumbnail, video, creator: { username, avatar } } }: VideoCardProps) => {
 
-const [play, setplay] = useState(false)
+const [play, setplay] = useState(false);
+const [isLoaded, setIsLoaded] = useState(false);
 
     return (
         <View className='flex-col items-center px-4 mb-14'>
@@ -41,16 +43,24 @@ const [play, setplay] = useState(false)
             </View>
 {
     play?(
-        <Video
-        //ref={video} 
+    //     <Video
+
+    <WebView
         source={{ uri: video }}
         className="w-full h-60 rounded-xl mt-3"
-        resizeMode={ResizeMode.CONTAIN}
-        useNativeControls
-        shouldPlay
-        onPlaybackStatusUpdate={(status: AVPlaybackStatus & { didJustFinish?: boolean }) => {
-          if (status.didJustFinish) {
+        javaScriptEnabled={true}
+        domStorageEnabled={true}
+        scalesPageToFit={true} // equivalent to resizeMode={ResizeMode.CONTAIN}
+        allowsInlineMediaPlayback={true} // equivalent to useNativeControls
+        orientation="landscape" // allow video to rotate to landscape mode
+        allowsFullscreenVideo={true} // allow video to be played in fullscreen mode
+        webkit-playsinline={true} // allow video to be played inline
+        onLoadStart={() => setIsLoaded(true)} // Handle loading
+        onError={(error) => console.log('Video Error: ', error)}
+        onMessage={(event) => {
+          if (event.nativeEvent.data === 'videoFinished') {
             setplay(false);
+            setIsLoaded(false); // Reset loaded state
           }
         }}
       />
