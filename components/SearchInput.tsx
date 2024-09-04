@@ -4,20 +4,15 @@ import React, { useState } from 'react'
 import { icons } from '../constants';
 import { router, usePathname } from 'expo-router';
 
-// interface FormFieldProps {
-//     title: string;
-//     value: string;
-//   placeholder?: string;
-//   handleChangeText: (text: string) => void;
-//     otherStyles?: string;
-//     keyboardType?:string;
-//   }
+interface SearchProps {
+  initialQuery?:string;
+   }
 
-//   const SearchInput: React.FC<FormFieldProps> = ({
+ const SearchInput: React.FC<SearchProps> = ({initialQuery})=> {
 
-const SearchInput = () => {
+
   const pathname = usePathname();
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useState(initialQuery||'')
   return (
 
     <View
@@ -30,7 +25,7 @@ const SearchInput = () => {
          items-center
           focus:border-secondary
           space-x-4">
-      <TextInput className="flex-1 text-white font-pregular text-base mt-0.5 "
+      <TextInput className="flex-1 text-white font-pregular text-base mt-0.5  "
         value={query}
         placeholder="Search for a video topic"
         placeholderTextColor="#CDCDE0"
