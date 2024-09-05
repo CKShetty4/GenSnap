@@ -37,7 +37,7 @@ const [showPassword, setshowPassword] = useState(false)
 <TextInput className="flex-1 text-white font-psemibold"
 value={value}
 placeholder={placeholder}
-placeholderTextColor={"#b7b8b"}
+placeholderTextColor="#7B7B8B"
 onChangeText={handleChangeText}
 secureTextEntry={title === 'Password' && !showPassword}
 />

@@ -8,6 +8,7 @@ import EmptyState from '@/components/EmptyState'
 import { getAllPosts, getLatestPosts } from '@/lib/appwrite'
 import useAppwrite from '@/lib/useAppwrite'
 import VideoCard from '@/components/VideoCard'
+import { useGlobalContext } from '@/context/GlobalProvider'
 
 
 
@@ -15,7 +16,7 @@ const Home = () => {
 
   const { data: posts, refetch } = useAppwrite(getAllPosts);
   const { data: latestPosts } = useAppwrite(getLatestPosts);
-
+  const { User } = useGlobalContext();
   const [refreshng, setrefreshng] = useState(false)
 
   const onRefresh = async () => {
@@ -42,9 +43,9 @@ const Home = () => {
           <View className='flex my-6 px-4 space-y-6  '>
             <View className=' flex-row justify-between items-center mb-6'>
               <View >
-                <Text className='font-pmedium text-sm text-gray-100 ' >Welcome Back</Text>
+                <Text className='font-pmedium text-sm text-gray-100 ' >Welcome Back,</Text>
                 <Text className='text-2xl font-psemibold text-white'>
-                  CKShetty
+                  {User?.username}
                 </Text>
               </View>
               <View className='mt-1.5 flex-row'>
