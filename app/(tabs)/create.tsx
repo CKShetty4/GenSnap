@@ -1,13 +1,17 @@
-import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, Image, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import FormField from '@/components/FormField'
 import { Video, ResizeMode } from 'expo-av'
 import { icons } from '@/constants'
 import CustomButton from '@/components/CustomButton'
+import * as DocumentPicker from 'expo-document-picker'
+import { router } from 'expo-router'
+import { CreateVideo } from '@/lib/appwrite'
+import { useGlobalContext } from '@/context/GlobalProvider'
 
 const Create = () => {
-
+  const { User } = useGlobalContext();
   const [uploading, setuploading] = useState(false)
 
   interface Form {
@@ -17,6 +21,7 @@ const Create = () => {
     prompt: string;
   }
 
+
   const [form, setForm] = useState<Form>({
     title: '',
     video: null,
@@ -24,8 +29,50 @@ const Create = () => {
     prompt: '',
   });
 
-  const submit=()=>{
 
+  const openPicker = async (selectType: string) => {
+    const result = await DocumentPicker.getDocumentAsync({
+      type: selectType === 'image' ? ['image/png', 'image/jpg', 'image/jpeg'] : ['video/mp4', 'video/gif']
+    })
+
+    if (!result.canceled) {
+      if (selectType === 'image') {
+        setForm({ ...form, thumbnail: result.assets[0] })
+      }
+
+
+      if (selectType === 'video') {
+        setForm({ ...form, video: result.assets[0] })
+
+      }
+    } 
+  }
+  const submit = async () => {
+    if (!form.title || !form.video || !form.thumbnail || !form.prompt) {
+      return Alert.alert('Invalid', "Please Fill in all the fileds")//Title,Message Format
+    }
+    setuploading(true)
+    try {
+
+await CreateVideo({
+  ...form, userID: User.$id
+}
+)
+
+      Alert.alert('Success', 'Post Uploaded Successfully')
+      router.push('/home')
+    } catch (error) {
+      Alert.alert('Error', (error as Error).message)
+
+    } finally {
+      setForm({
+        title: '',
+        video: null,
+        thumbnail: null,
+        prompt: '',
+      })
+      setuploading(false)
+    }
   }
   return (
 
@@ -46,7 +93,9 @@ const Create = () => {
           <Text className='text-base text-gray-100 font-pmedium'>
             Upload a video
           </Text>
-          <TouchableOpacity >
+          <TouchableOpacity
+            onPress={() => openPicker('video')}
+          >
 
             {form.video ?
               (
@@ -54,7 +103,6 @@ const Create = () => {
                   source={{ uri: form.video.uri }}
                   className='w-full h-64 rounded-2xl'
                   resizeMode={ResizeMode.COVER}
-                  isLooping
                 />
               ) :
               (
@@ -68,48 +116,50 @@ const Create = () => {
           </TouchableOpacity>
 
         </View>
-<View className='mt-7 space-y-2 '>
-<Text className='text-base text-gray-100 font-pmedium'>
+        <View className='mt-7 space-y-2 '>
+          <Text className='text-base text-gray-100 font-pmedium'>
             Upload a Thumbnail Image
           </Text>
-          <TouchableOpacity >
+          <TouchableOpacity
+            onPress={() => openPicker('image')}
+          >
 
             {form.thumbnail ?
               (
-                <Image 
-                source={{ uri: form.thumbnail.uri }}
-                resizeMode='cover'
-                className='w-full h-64 rounded-2xl'
+                <Image
+                  source={{ uri: form.thumbnail.uri }}
+                  resizeMode='cover'
+                  className='w-full h-64 rounded-2xl'
                 />
               ) :
               (
                 <View className="w-full h-16 px-4 bg-black-100 rounded-2xl border-2 border-black-200 flex justify-center items-center flex-row space-x-2">
-                <Image
-                  source={icons.upload}
-                  resizeMode="contain"
-                  alt="upload"
-                  className="w-5 h-5"
-                />
-                <Text className='text-sm font-pmedium text-gray-100'>
-                  Choose a File
-                </Text>
+                  <Image
+                    source={icons.upload}
+                    resizeMode="contain"
+                    alt="upload"
+                    className="w-5 h-5"
+                  />
+                  <Text className='text-sm font-pmedium text-gray-100'>
+                    Choose a File
+                  </Text>
                 </View>
               )
             }
           </TouchableOpacity>
-</View>
-<FormField
+        </View>
+        <FormField
           title='AI Prompt'
           value={form.prompt}
-          handleChangeText={(e) => setForm({ ...form, title: e })}
+          handleChangeText={(e) => setForm({ ...form, prompt: e })}
           placeholder='The Prompt You used to create the video...'
           otherStyles='mt-7 text-white'
         />
         <CustomButton
-        title='Submit and Publish'
-        handlePress={submit}
-        containerStyles='mt-10'
-        isLoading={uploading}
+          title='Submit and Publish'
+          handlePress={submit}
+          containerStyles='mt-10'
+          isLoading={uploading}
         />
       </ScrollView>
     </SafeAreaView>
