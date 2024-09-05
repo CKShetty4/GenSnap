@@ -3,6 +3,8 @@ import React, { useState } from 'react'
 import { icons } from '@/constants'
 import { ResizeMode, Video } from 'expo-av';
 import WebView from 'react-native-webview';
+import { likePost } from '@/lib/appwrite';
+import { useGlobalContext } from '@/context/GlobalProvider';
 
 interface VideoCardProps {
   Video: {
@@ -20,6 +22,18 @@ const VideoCard = ({ Video: { title, thumbnail, video, creator: { username, avat
 
 const [play, setplay] = useState(false);
 const [isLoaded, setIsLoaded] = useState(false);
+const [liked, setliked] = useState(false)
+const { User } = useGlobalContext();
+
+const LikedVideo = async () => {
+    setliked(!liked);
+  
+    if (liked) {
+      await likePost(video, User.$id, true); // unlike the video
+    } else {
+      await likePost(video, User.$id); // like the video
+    }
+  };
 
     return (
         <View className='flex-col items-center px-4 mb-14'>
@@ -37,9 +51,13 @@ const [isLoaded, setIsLoaded] = useState(false);
                         >{username}</Text>
                     </View>
                 </View>
-                <View className='p-2'>
-                    <Image source={icons.menu} className='w-5 h-5' resizeMode='contain'/>
-                </View>
+                <TouchableOpacity 
+        activeOpacity={0.7}
+        onPress={LikedVideo}
+    className='p-2'>
+        {liked?(<Image source={icons.heartfill} className='w-6 h-6' resizeMode='contain'/>):(<Image source={icons.heart} className='w-6 h-6' resizeMode='contain'/>)}
+                    
+                </TouchableOpacity>
             </View>
 {
     play?(
@@ -75,6 +93,7 @@ resizeMode='cover'/>
 <Image source={icons.play}
 className='w-12 h-12 absolute'
 resizeMode='contain'/>
+
     </TouchableOpacity>)
 }
         </View>

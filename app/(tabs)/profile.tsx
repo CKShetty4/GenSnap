@@ -1,8 +1,8 @@
 import { View, FlatList, TouchableOpacity, Image } from 'react-native'
-import React, {  useState } from 'react'
+import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import EmptyState from '@/components/EmptyState'
-import { getUserPosts,  signOut } from '@/lib/appwrite'
+import { getUserPosts, signOut } from '@/lib/appwrite'
 import useAppwrite from '@/lib/useAppwrite'
 import VideoCard from '@/components/VideoCard'
 import { useGlobalContext } from '@/context/GlobalProvider'
@@ -16,11 +16,11 @@ const Profile = () => {
   const { setisLoggedIn, User, setUser, } = useGlobalContext();
   const { data: posts, refetch } = useAppwrite(() => getUserPosts(User.$id));//This time not paasing function declaration but calling the function. That's why we are using callback function.
 
-  const logout = async() => {
+  const logout = async () => {
     await signOut();
     setUser(null);
     setisLoggedIn(false);
-router.replace('/sign-in')
+    router.replace('/sign-in')
   }
 
   //console.log(posts)
@@ -28,10 +28,10 @@ router.replace('/sign-in')
     <SafeAreaView className='bg-primary h-full'>
       <FlatList
         data={posts}
-        
+
         keyExtractor={(item: { $id: string }) => item.$id}
         renderItem={({ item }: { item: { $id: string; title: string; thumbnail: string; video: string; creator: { username: string; avatar: string; } } }) => (
-         
+
           <VideoCard
             Video={item}
           />
@@ -61,7 +61,7 @@ router.replace('/sign-in')
             />
             <View className='mt-5 flex-row'>
               <InfoBox
-                title={posts?.length||0}
+                title={posts?.length || 0}
                 subtitle='Posts'
                 containerStyle='mr-10'
                 titleStyle='text-xl'
