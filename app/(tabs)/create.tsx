@@ -5,7 +5,7 @@ import FormField from '@/components/FormField'
 import { Video, ResizeMode } from 'expo-av'
 import { icons } from '@/constants'
 import CustomButton from '@/components/CustomButton'
-import * as DocumentPicker from 'expo-document-picker'
+import * as ImagePicker from 'expo-image-picker'
 import { router } from 'expo-router'
 import { CreateVideo } from '@/lib/appwrite'
 import { useGlobalContext } from '@/context/GlobalProvider'
@@ -31,8 +31,10 @@ const Create = () => {
 
 
   const openPicker = async (selectType: string) => {
-    const result = await DocumentPicker.getDocumentAsync({
-      type: selectType === 'image' ? ['image/png', 'image/jpg', 'image/jpeg'] : ['video/mp4', 'video/gif']
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: selectType === 'image' ? ImagePicker.MediaTypeOptions.Images : ImagePicker.MediaTypeOptions.Videos,
+      aspect: [4, 3],
+      quality: 1,
     })
 
     if (!result.canceled) {
@@ -45,7 +47,7 @@ const Create = () => {
         setForm({ ...form, video: result.assets[0] })
 
       }
-    } 
+    }
   }
   const submit = async () => {
     if (!form.title || !form.video || !form.thumbnail || !form.prompt) {
@@ -54,10 +56,10 @@ const Create = () => {
     setuploading(true)
     try {
 
-await CreateVideo({
-  ...form, userID: User.$id
-}
-)
+      await CreateVideo({
+        ...form, userID: User.$id
+      }
+      )
 
       Alert.alert('Success', 'Post Uploaded Successfully')
       router.push('/home')
